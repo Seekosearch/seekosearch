@@ -1,12 +1,12 @@
 import * as cheerio from 'cheerio';
 
 const PROXIES = [
-    'https://thepibay.site',
-    'https://thepibay.online',
-    'https://thpibay.xyz',
-    'https://pirateproxy.ga',
-    'https://pirateproxy.ml',
-    'https://proxypirate.tk'
+    'https://thepiratebay0.org',
+    'https://tpb.party',
+    'https://piratebay.live',
+    'https://thehiddenbay.com',
+    'https://thepiratebay.zone',
+    'https://tpbproxypirate.com'
 ];
 
 const MAX_PAGES = 5;

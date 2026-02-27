@@ -14,7 +14,6 @@ export interface SearchState {
     sources: {
         'The Pirate Bay': boolean;
         'Nyaa': boolean;
-        'OpenLibrary': boolean;
         'Archive.org': boolean;
         "Anna's Archive": boolean;
         'FitGirl': boolean;

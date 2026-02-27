@@ -4,7 +4,7 @@ import type { SearchState, TorrentResult } from './types';
 
 import { searchTPB } from './services/tpb';
 import { searchNyaa } from './services/nyaa';
-import { searchOpenLibrary, searchArchiveOrg, searchAnnasArchive } from './services/apis';
+import { searchArchiveOrg, searchAnnasArchive } from './services/apis';
 import { searchFitGirl, searchElAmigos, searchGamesTorrents, searchSkidrow } from './services/games';
 
 const RESULTS_PER_PAGE = 20;
@@ -15,7 +15,6 @@ function App() {
     sources: {
       'The Pirate Bay': true,
       'Nyaa': true,
-      'OpenLibrary': true,
       'Archive.org': true,
       "Anna's Archive": true,
       'FitGirl': true,
@@ -50,7 +49,7 @@ function App() {
 
       if (state.sources['The Pirate Bay']) promises.push(searchTPB(state.query).then(data => ({ source: 'The Pirate Bay', data })));
       if (state.sources['Nyaa']) promises.push(searchNyaa(state.query).then(data => ({ source: 'Nyaa', data })));
-      if (state.sources['OpenLibrary']) promises.push(searchOpenLibrary(state.query).then(data => ({ source: 'OpenLibrary', data })));
+
       if (state.sources['Archive.org']) promises.push(searchArchiveOrg(state.query).then(data => ({ source: 'Archive.org', data })));
       if (state.sources["Anna's Archive"]) promises.push(searchAnnasArchive(state.query).then(data => ({ source: "Anna's Archive", data })));
       if (state.sources['FitGirl']) promises.push(searchFitGirl(state.query).then(data => ({ source: 'FitGirl', data })));
@@ -116,7 +115,6 @@ function App() {
   const sourceColors: Record<string, string> = {
     'The Pirate Bay': 'from-amber-700/20 to-yellow-600/20 text-yellow-500 border-yellow-600/30',
     'Nyaa': 'from-blue-500/20 to-cyan-500/20 text-blue-400 border-blue-500/30',
-    'OpenLibrary': 'from-purple-500/20 to-fuchsia-500/20 text-purple-400 border-purple-500/30',
     'Archive.org': 'from-zinc-500/20 to-zinc-400/20 text-zinc-300 border-zinc-500/30',
     "Anna's Archive": 'from-emerald-500/20 to-teal-500/20 text-emerald-400 border-emerald-500/30',
     'FitGirl': 'from-pink-500/20 to-rose-500/20 text-pink-400 border-pink-500/30',
@@ -128,7 +126,6 @@ function App() {
   const sourceBadgeClasses: Record<string, string> = {
     'The Pirate Bay': 'text-yellow-400 border-yellow-500/20 bg-yellow-500/10',
     'Nyaa': 'text-blue-400 border-blue-500/20 bg-blue-500/10',
-    'OpenLibrary': 'text-purple-400 border-purple-500/20 bg-purple-500/10',
     'Archive.org': 'text-zinc-300 border-zinc-500/20 bg-zinc-500/10',
     "Anna's Archive": 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10',
     'FitGirl': 'text-pink-400 border-pink-500/20 bg-pink-500/10',

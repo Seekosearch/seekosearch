@@ -1,6 +1,6 @@
 import { scrapeNyaa } from './scrapers/nyaa.js';
 import { scrapeTPB } from './scrapers/tpb.js';
-import { scrapeOpenLibrary, scrapeArchiveOrg, scrapeAnnasArchive } from './scrapers/apis.js';
+import { scrapeArchiveOrg, scrapeAnnasArchive } from './scrapers/apis.js';
 import { scrapeFitGirl, scrapeElAmigos, scrapeGamesTorrents, scrapeSkidrow } from './scrapers/games.js';
 import { filterByRelevance } from './scrapers/relevance.js';
 
@@ -50,9 +50,6 @@ export default {
                         break;
                     case 'tpb':
                         results = await scrapeTPB(query);
-                        break;
-                    case 'openlibrary':
-                        results = await scrapeOpenLibrary(query);
                         break;
                     case 'archiveorg':
                         results = await scrapeArchiveOrg(query);
