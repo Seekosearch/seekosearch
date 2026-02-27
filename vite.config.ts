@@ -6,6 +6,6 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/seeko-search/',
+  base: '/',
   plugins: [react(), tailwindcss(), cloudflare()],
 })
