@@ -29,43 +29,80 @@ function parseNyaaPage($) {
     return results;
 }
 
+const NYAA_MIRRORS = [
+    'https://nyaa.si',
+    'https://nyaa.land',
+    'https://nyaa.ink',
+];
+
 export async function scrapeNyaa(query) {
-    try {
-        const allResults = [];
+    let lastError = null;
 
-        for (let page = 1; page <= MAX_PAGES; page++) {
-            const targetUrl = `https://nyaa.si/?f=0&c=0_0&q=${encodeURIComponent(query)}&p=${page}`;
+    for (const mirror of NYAA_MIRRORS) {
+        try {
+            const allResults = [];
 
-            const response = await fetch(targetUrl, {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+            for (let page = 1; page <= MAX_PAGES; page++) {
+                const targetUrl = `${mirror}/?f=0&c=0_0&q=${encodeURIComponent(query)}&p=${page}`;
+
+                const response = await fetch(targetUrl, {
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+                    }
+                });
+
+                if (!response.ok) {
+                    if (page === 1) {
+                        console.warn(`Nyaa mirror ${mirror} failed with status ${response.status}. Trying next...`);
+                        lastError = new Error(`HTTP ${response.status}`);
+                        break;
+                    }
+                    break;
                 }
-            });
 
-            if (!response.ok) {
-                console.warn(`Nyaa scrape failed with status ${response.status}`);
-                break;
+                const html = await response.text();
+
+                // Check if we got a valid Nyaa page (not a block/captcha page)
+                if (!html.includes('torrent-list') && page === 1) {
+                    console.warn(`Nyaa mirror ${mirror} returned unexpected HTML. Trying next...`);
+                    lastError = new Error('Unexpected HTML');
+                    break;
+                }
+
+                const $ = cheerio.load(html);
+                const pageResults = parseNyaaPage($);
+
+                if (pageResults.length === 0) {
+                    if (page === 1) {
+                        // First page empty might mean mirror is broken
+                        break;
+                    }
+                    break;
+                }
+
+                allResults.push(...pageResults);
+
+                const hasNextPage = $('ul.pagination li:last-child').hasClass('disabled') === false;
+                if (!hasNextPage) break;
             }
 
-            const html = await response.text();
-            const $ = cheerio.load(html);
-            const pageResults = parseNyaaPage($);
-
-            if (pageResults.length === 0) break;
-
-            allResults.push(...pageResults);
-
-            const hasNextPage = $('ul.pagination li:last-child').hasClass('disabled') === false;
-            if (!hasNextPage) break;
+            if (allResults.length > 0) {
+                return allResults.map((r, i) => ({
+                    id: `nyaa-${i}-${Date.now()}`,
+                    ...r,
+                    source: 'Nyaa',
+                }));
+            }
+        } catch (error) {
+            console.warn(`Nyaa mirror ${mirror} error: ${error.message}. Trying next...`);
+            lastError = error;
         }
-
-        return allResults.map((r, i) => ({
-            id: `nyaa-${i}-${Date.now()}`,
-            ...r,
-            source: 'Nyaa',
-        }));
-    } catch (error) {
-        console.error('Nyaa Scrape Error:', error.message);
-        throw new Error('Nyaa scraping failed');
     }
+
+    // If all mirrors failed but didn't throw, return empty
+    if (lastError) {
+        console.error('Nyaa Scrape Error: All mirrors failed. Last error:', lastError.message);
+        // throw new Error('Nyaa scraping failed across all mirrors');
+    }
+    return [];
 }

@@ -105,7 +105,16 @@ export async function scrapeTPB(query) {
             }
 
             if (allResults.length > 0) {
-                return allResults.map((r, i) => ({
+                // Deduplicate by magnet hash
+                const seen = new Set();
+                const unique = allResults.filter(r => {
+                    const hashMatch = r.link.match(/btih:([a-fA-F0-9]+)/i);
+                    const key = hashMatch ? hashMatch[1].toUpperCase() : r.name;
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
+                return unique.map((r, i) => ({
                     id: `tpb-${i}-${Date.now()}`,
                     ...r,
                     source: 'The Pirate Bay',
