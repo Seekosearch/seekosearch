@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://seekosearch.seeko-search.workers.dev/sitemap.xml
